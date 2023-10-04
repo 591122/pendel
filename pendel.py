@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import time
 import csv
+import datetime
+import os
 
 # Define the lower and upper bounds for the green color in HSV
 lower_green = np.array([35, 100, 100])
@@ -122,12 +124,32 @@ cv2.destroyAllWindows()
 
 # Print the recorded data with time in seconds
 print("Recorded Data:")
+x = str(datetime.datetime.now())
+dato = x[:10]
+timer_min = x[11:19]
 for entry in data:
     print(f"Position: x:{entry[0]}, y:{entry[1]}, Time (s): {entry[2]:.3f}, vikelen er {entry[3]:.3f} og vinkelhastighet: {entry[4]:.3f}"  )
 if(data[0] is not None):
-     with open('recorded_data.csv', 'w', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile)
-            csv_writer.writerow(['Position_X', 'Position_Y', 'Time (s)', 'Vinkel', 'Vinkel_hastighet'])
-            for entry in data:
-                csv_writer.writerow([entry[0], entry[1], entry[2], entry[3], entry[4]])
-print("Data saved as 'recorded_data.csv'")
+    # Specify the folder name
+    folder_name = "recorded_data"
+
+    # Create the folder if it doesn't exist
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+
+    # Specify the file path with the folder
+    file_path = os.path.join(folder_name, dato + "_" + timer_min + '.csv')
+    with open(file_path, 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(['Position_X', 'Position_Y', 'Time (s)', 'Vinkel', 'Vinkel_hastighet'])
+        for entry in data:
+            csv_writer.writerow([entry[0], entry[1], entry[2], entry[3], entry[4]])
+
+
+x = str(datetime.datetime.now())
+dato = x[:10]
+timer_min = x[11:19]
+
+#print(dato+"_"+timer_min)
+
+print('Data saved as ' + dato + '_' + timer_min + '.csv')

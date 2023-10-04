@@ -1,30 +1,38 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import os  # Import the 'os' module
+import os
 
 # Get the current working directory
 current_directory = os.getcwd()
 
-# Specify the full file path
-file_path = os.path.join(current_directory, 'recorded_data.csv')
+# Specify the directory containing the CSV files
+data_folder = os.path.join(current_directory, 'recorded_data')
 
-# Read the CSV file into a DataFrame
-df = pd.read_csv(file_path)
+# List all CSV files in the directory
+csv_files = [f for f in os.listdir(data_folder) if f.endswith('.csv')]
 
-# Extract the 'Position_X' and 'Time (s)' columns
-position_x = df['Vinkel']
-time = df['Time (s)']
+# Loop through each CSV file
+for csv_file in csv_files:
+    # Construct the full file path
+    file_path = os.path.join(data_folder, csv_file)
 
-# Create a scatter plot
-plt.scatter(time, position_x)
+    # Read the CSV file into a DataFrame
+    df = pd.read_csv(file_path)
 
-# Create a scatter of vinkel_hastighet
-plt.scatter(time, df['Vinkel_hastighet'])
+    # Extract the 'Position_X' and 'Time (s)' columns
+    position_x = df['Vinkel']
+    time = df['Time (s)']
 
-# Set labels and title
-plt.xlabel('Time (s)')
-plt.ylabel('Position_X')
-plt.title('Position_X vs. Time')
+    # Create a scatter plot
+    plt.scatter(time, position_x)
 
-# Show the plot
-plt.show()
+    # Create a scatter of vinkel_hastighet
+    plt.scatter(time, df['Vinkel_hastighet'])
+
+    # Set labels and title
+    plt.xlabel('Tid (s)')
+    plt.ylabel('Vinkel og vinkelhastighet')
+    plt.title(f'Vinkel over tid for: {csv_file}')
+
+    # Show the plot
+    plt.show()
