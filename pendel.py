@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import time
+import csv
 
 # Define the lower and upper bounds for the green color in HSV
 lower_green = np.array([35, 100, 100])
@@ -11,6 +13,12 @@ cap = cv2.VideoCapture(0)
 # Set the position of the static dot
 static_dot_x = 620  # Middle of the screen in a 2560x1600 resolution
 static_dot_y = 50    # Adjust the padding from the top as needed
+
+# Initialize variables to track the recording state, data, and start time
+recording = False
+data = []
+start_time = 0
+entries = -1
 
 while True:
     # Read a frame from the webcam
@@ -55,17 +63,37 @@ while True:
             
             # Print the pixel coordinates of the center
             print(f"Center Coordinates (x, y): ({cx}, {cy})")
-        
-            vinkel = (np.arccos((cy - static_dot_y) / np.sqrt((cx - static_dot_x)**2 + (cy - static_dot_y)**2))/np.pi)*180
+            if(cx>=620):
+                vinkel = (np.arccos((cy - static_dot_y) / np.sqrt((cx - static_dot_x)**2 + (cy - static_dot_y)**2))/np.pi)*180
+            else:
+                vinkel = -(np.arccos((cy - static_dot_y) / np.sqrt((cx - static_dot_x)**2 + (cy - static_dot_y)**2))/np.pi)*180
 
             print(f"Vinkelen = " + str(vinkel))
             
-            # Draw a red dot at the center of the largest object
-            cv2.circle(frame, (cx, cy), 5, (0, 0, 255), -1)  # Red color
+            # Record data if recording is active
+            if recording:
+                # Calculate elapsed time in seconds
+                current_time = time.time() - start_time
+
+                if(current_time is 0):
+                    vinkel_hastighet = 0
+                else:
+                    if entries >= 0:
+                        vinkel_hastighet = (vinkel - data[entries][3]) / (current_time - data[entries][2])
+                    else:
+                        vinkel_hastighet = 0
+
+                data.append((cx, cy, current_time, vinkel, vinkel_hastighet))
+                entries = entries + 1
         
         # Draw a bounding box around the largest detected green object
         x, y, w, h = cv2.boundingRect(largest_contour)
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        
+        # Draw the red dot at the center of the box
+        center_x = x + w // 2
+        center_y = y + h // 2
+        cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
     
     # Draw the static dot at the top middle of the screen
     cv2.circle(frame, (static_dot_x, static_dot_y), 5, (0, 0, 255), -1)  # Red color
@@ -73,10 +101,33 @@ while True:
     # Display the original frame with the center dot, bounding box, and static dot
     cv2.imshow('Green Object Detection', frame)
     
+    # Check for key presses
+    key = cv2.waitKey(1) & 0xFF
+    
+    # Start/stop recording when 'p' key is pressed
+    if key == ord('p'):
+        if recording:
+            recording = False
+        else:
+            recording = True
+            start_time = time.time()  # Record the start time
+    
     # Break the loop when the 'q' key is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if key == ord('q'):
         break
 
 # Release the webcam and close all OpenCV windows
 cap.release()
 cv2.destroyAllWindows()
+
+# Print the recorded data with time in seconds
+print("Recorded Data:")
+for entry in data:
+    print(f"Position: x:{entry[0]}, y:{entry[1]}, Time (s): {entry[2]:.3f}, vikelen er {entry[3]:.3f} og vinkelhastighet: {entry[4]:.3f}"  )
+if(data[0] is not None):
+     with open('recorded_data.csv', 'w', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            csv_writer.writerow(['Position_X', 'Position_Y', 'Time (s)', 'Vinkel', 'Vinkel_hastighet'])
+            for entry in data:
+                csv_writer.writerow([entry[0], entry[1], entry[2], entry[3], entry[4]])
+print("Data saved as 'recorded_data.csv'")
