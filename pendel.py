@@ -22,6 +22,10 @@ data = []
 start_time = 0
 entries = -1
 
+# Get the frames per second (fps) of the camera
+fps = int(cap.get(cv2.CAP_PROP_FPS))
+print(f"Camera is capturing at {fps} fps")
+
 while True:
     # Read a frame from the webcam
     ret, frame = cap.read()
@@ -99,7 +103,10 @@ while True:
     
     # Draw the static dot at the top middle of the screen
     cv2.circle(frame, (static_dot_x, static_dot_y), 5, (0, 0, 255), -1)  # Red color
-    
+
+    # Display the frames per second (fps) in one of the corners
+    cv2.putText(frame, f"FPS: {fps}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
     # Display the original frame with the center dot, bounding box, and static dot
     cv2.imshow('Red Object Detection', frame)
     
