@@ -27,11 +27,11 @@ for csv_file in csv_files:
     plt.scatter(time, position_x)
 
     # Create a scatter of vinkel_hastighet
-    plt.scatter(time, df['Vinkel_hastighet'])
+    #plt.scatter(time, df['Vinkel_hastighet'])
 
     # Set labels and title
     plt.xlabel('Tid (s)')
-    plt.ylabel('Vinkel og vinkelhastighet')
+    plt.ylabel('Vinkel')
     plt.title(f'Vinkel over tid for: {csv_file}')
 
     # Show the plot
