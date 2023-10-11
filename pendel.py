@@ -7,7 +7,7 @@ import os
 
 # Define the lower and upper bounds for the red color in HSV
 lower_red = np.array([0, 100, 100])
-upper_red = np.array([10, 255, 255])
+upper_red = np.array([5, 255, 255])
 
 # Initialize the webcam
 cap = cv2.VideoCapture(0)
