@@ -7,7 +7,7 @@ import os
 
 # Define the lower and upper bounds for the red color in HSV
 lower_red = np.array([0, 100, 100])
-upper_red = np.array([10, 255, 255])
+upper_red = np.array([5, 255, 255])
 
 # Initialize the webcam
 cap = cv2.VideoCapture(0)
@@ -21,6 +21,10 @@ recording = False
 data = []
 start_time = 0
 entries = -1
+
+# Get the frames per second (fps) of the camera
+fps = int(cap.get(cv2.CAP_PROP_FPS))
+print(f"Camera is capturing at {fps} fps")
 
 while True:
     # Read a frame from the webcam
@@ -99,7 +103,10 @@ while True:
     
     # Draw the static dot at the top middle of the screen
     cv2.circle(frame, (static_dot_x, static_dot_y), 5, (0, 0, 255), -1)  # Red color
-    
+
+    # Display the frames per second (fps) in one of the corners
+    cv2.putText(frame, f"FPS: {fps}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
     # Display the original frame with the center dot, bounding box, and static dot
     cv2.imshow('Red Object Detection', frame)
     
