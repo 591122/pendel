@@ -5,16 +5,16 @@ import csv
 import datetime
 import os
 
-# Define the lower and upper bounds for the green color in HSV
-lower_green = np.array([35, 100, 100])
-upper_green = np.array([85, 255, 255])
+# Define the lower and upper bounds for the red color in HSV
+lower_red = np.array([0, 100, 100])
+upper_red = np.array([10, 255, 255])
 
 # Initialize the webcam
 cap = cv2.VideoCapture(0)
 
 # Set the position of the static dot
-static_dot_x = 620  # Middle of the screen in a 2560x1600 resolution
-static_dot_y = 50    # Adjust the padding from the top as needed
+static_dot_x = 960  # Middle of the screen in a 2560x1600 resolution
+static_dot_y = 80    # Adjust the padding from the top as needed
 
 # Initialize variables to track the recording state, data, and start time
 recording = False
@@ -30,7 +30,7 @@ while True:
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     
     # Create a mask to extract green regions
-    mask = cv2.inRange(hsv, lower_green, upper_green)
+    mask = cv2.inRange(hsv, lower_red, upper_red)
     
     # Apply Gaussian blur to the mask to reduce noise
     mask = cv2.GaussianBlur(mask, (5, 5), 0)
@@ -101,7 +101,7 @@ while True:
     cv2.circle(frame, (static_dot_x, static_dot_y), 5, (0, 0, 255), -1)  # Red color
     
     # Display the original frame with the center dot, bounding box, and static dot
-    cv2.imshow('Green Object Detection', frame)
+    cv2.imshow('Red Object Detection', frame)
     
     # Check for key presses
     key = cv2.waitKey(1) & 0xFF
