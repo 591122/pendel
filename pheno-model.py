@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd 
 
 import matplotlib.pyplot as plt 
-#sss
+#sssrhts
 from scipy.stats import linregress
 from scipy.optimize import minimize
 import plotly.graph_objects as go
