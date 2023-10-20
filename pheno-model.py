@@ -3,18 +3,24 @@ from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 import pandas as pd
 import scipy
-from scipy.integrate import solve_ivp
+from scipy.integrate import solve_ivp, odeint
+
+print("Kjører!")
+
+def contains_only_floats(lst):
+    for element in lst:
+        if not isinstance(element, float):
+            return False
+    return True
+
 
 # Load data
-df = pd.read_csv(r'C:\Users\vikto\Documents\Programming\Python codes\Mathematical mod and sim\Project\pendel\recorded_data\45_lang_1.csv')
-
+df = pd.read_csv(r'C:\Users\vikto\Documents\Programming\Python codes\Mathematical mod and sim\Project\pendel\recorded_data\45_lang_2.csv')
+df = df
 # Convert 'Vinkel' column from degrees to radians
 df['Vinkel'] = np.radians(df['Vinkel'])
 df['Vinkel_hastighet'] = np.radians(df['Vinkel_hastighet'])
-
-
-
-
+print(len(df['Vinkel']))
 
 # ============Define the second-order differential pendulumsystem============
 def system(t, variables, parameters):
@@ -22,15 +28,13 @@ def system(t, variables, parameters):
     b, L = parameters
     
     dydt = v
-    dvdt = -b*v - (9.81/L)*np.sin(y)  
+    dvdt = -b*(v)**2 - (9.81/L)*np.sin(y)  
     return [dydt, dvdt]
-
-
 
 
 # ============Define the cost function to be minimized==============
 def C(params):
-    t = df['Time (s)']  # 
+    t = df['Time (s)']
 
     # Define initial conditions
     initial_conditions = [df['Vinkel'].iloc[0], df['Vinkel_hastighet'].iloc[0] ]  # y(0) = 0, dy/dt(0) = 1
@@ -45,7 +49,11 @@ def C(params):
     theta_dot_est = sol.y[1]
     t_values = sol.t
     #return np.sum(np.abs(theta_est - df['Vinkel']))
+    print(contains_only_floats(theta_est))
     return np.sum((theta_est - df['Vinkel'])**2)
+
+
+
 
 
 
@@ -53,18 +61,16 @@ def C(params):
 #==================parameter estimation=======================
 
 # Bounds for the parameters
-bounds = [(0, None), (0, None)]
+bounds = [(0.001, 1), (0.6, 0.7)]
 
 # Initial guess
-initial_guess = [0.05, 0.684]  # Adjust these initial guesses as needed
+initial_guess = [0.5, 0.67971812]  # Adjust these initial guesses as needed
 
 # Perform the minimization with the constraint
-res = minimize(C, initial_guess, bounds=bounds)
+#res = minimize(C, initial_guess, bounds=bounds)
 
 # Print the result
-print("Optimal solution:", res.x)
-
-
+#print("Optimal solution:", res.x)
 
 
 #==============plotting the data:==================
@@ -78,14 +84,20 @@ initial_conditions = [df['Vinkel'].iloc[0], df['Vinkel_hastighet'].iloc[0] ]  # 
 t_span = [t.iloc[0], t.iloc[-1]]  # From t=0 to t=10
 
 # Call integrate:
-sol = solve_ivp(system, t_span, initial_conditions, args=(res.x,), t_eval=t)
-#sol = solve_ivp(system, t_span, initial_conditions, args=([0.9, 0.684],), t_eval=t)
+#sol = solve_ivp(system, t_span, initial_conditions, args=(res.x,), t_eval=t)
+sol = solve_ivp(system, t_span, initial_conditions, args=([0.9, 0.67971812],), t_eval=t) # HERE IS THE PROBLEM (0.9)
+
+#sol = odeint(system, initial_conditions, t, args=tuple([0.001, 0.67971812]))
+
 
 theta_est = sol.y[0]
 theta_dot_est = sol.y[1]
 t_values = sol.t
 
 
+error = np.sum((theta_est - df['Vinkel'])**2)
+
+print(f'squared error is:{error}')
 # Plot the results
 # Convert back to degrees for plotting
 plt.plot(t, df['Vinkel'], 'o', label='Original Data')
@@ -94,3 +106,4 @@ plt.xlabel('Time')
 plt.ylabel('Value')
 plt.legend()
 plt.show()
+print('FERDIG!')
