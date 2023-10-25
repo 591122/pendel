@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import os
 
-print("Kjører!")
+print("Running!")
 
 # Define the gravitational acceleration (m/s^2), length of the pendulum (m), initial angle (radians),
 # initial angular velocity (radians/s), and time step (s)
@@ -12,11 +13,22 @@ theta0 = np.pi/4
 omega0 = 0.0
 
 # Load data
-df = pd.read_csv('/Users/andreaswergeland/git/pendel/pendel/recorded_data/45_lang_2.csv')
+# Get the current working directory
+current_dir = os.getcwd()
+csv_file_path = os.path.join(current_dir, 'recorded_data/45_lang_2.csv')
+df = pd.read_csv(csv_file_path)
 df['Vinkel'] = np.radians(df['Vinkel'])
 df['Vinkel_hastighet'] = np.radians(df['Vinkel_hastighet'])
 t_values = df['Time (s)'].values
-dt = t_values[1] - t_values[0]  # Calculate the time step from the data
+
+
+# Calculate the average time intervals for the datapoints
+tid = []
+for i in range(1, len(df)):
+    dt = df['Time (s)'].iloc[i] - df['Time (s)'].iloc[i-1]
+    tid.append(dt)
+dt = np.mean(tid)
+
 
 # Initialize arrays to store state values
 num_steps = len(t_values)
@@ -48,37 +60,61 @@ def C(params):
     for i in range(1, num_steps):
         y_prev, v_prev = theta_est[i - 1], theta_dot_est[i - 1]
         b, L = params
+        dt = df['Time (s)'].iloc[i] - df['Time (s)'].iloc[i-1]
         y_new, v_new = forward_euler_step(y_prev, v_prev, b, L, dt)
         theta_est[i] = y_new
         theta_dot_est[i] = v_new
 
-    # Calculate the error using only the relevant part of theta_est
+    # Calculate the error using theta_est and the actual data
     error = np.sum((theta_est - df['Vinkel'])**2)
     return error
 
-# Bounds for the parameters
-bounds = [(0.1, 10), (0.1, 10)]
+# Initial guess & bounds for the parameters
+initial_guess = [1, 0.7]
+bounds = [(0.1, 2), (0.1, 2)]
 
-# Initial guess
-initial_guess = [0.05, 0.68004458]
-
-# Perform the minimization with the constraint
+# Perform the minimization with the constraint and printing the result
 from scipy.optimize import minimize
 res = minimize(C, initial_guess, bounds=bounds)
-
-# Print the result
 print("Optimal solution:", res.x)
+
+
+
+#       ------ You can ignore this part under! ------
+
+# Reseting the variables to comfirme that the optimization works correctly
+theta_est = np.zeros(num_steps)
+theta_dot_est = np.zeros(num_steps)
+
+initial_conditions = [df['Vinkel'].iloc[0], df['Vinkel_hastighet'].iloc[0]]
+    
+# Initialize state values for each optimization iteration
+theta_est[0], theta_dot_est[0] = initial_conditions
+
+for i in range(1, num_steps):
+        y_prev, v_prev = theta_est[i - 1], theta_dot_est[i - 1]
+        b, L = res.x
+        dt = df['Time (s)'].iloc[i] - df['Time (s)'].iloc[i-1]
+        y_new, v_new = forward_euler_step(y_prev, v_prev, b, L, dt)
+        theta_est[i] = y_new
+        theta_dot_est[i] = v_new
+
+#       ------ You can ignore this part above!------ 
+
+
 
 # Calculate the error after the optimization
 error = np.sum((theta_est - df['Vinkel'])**2)
 print(f'squared error is:{error}')
 
+
 # Plot the results
 plt.plot(t_values, df['Vinkel'], 'o', label='Original Data')
-plt.plot(t_values, theta_est, label='Estimated')
+plt.plot(t_values, theta_est, 'o-', label='Estimated')
+plt.title('Parameter estimation of L = ' + str(res.x[0])[:5] + ' and b = ' + str(res.x[1])[:5] + ' for pendulum system with linear damping. With Mean squard error = '  + str(error)[:5])
 plt.xlabel('Time (s)')
 plt.ylabel('Angle (radians)')
 plt.legend()
 plt.show()
 
-print('FERDIG!')
+print('Done!')

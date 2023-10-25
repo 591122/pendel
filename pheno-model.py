@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import scipy
 from scipy.integrate import solve_ivp, odeint
+import os
 
 print("Kjører!")
 
@@ -15,8 +16,11 @@ def contains_only_floats(lst):
 
 
 # Load data
-df = pd.read_csv(r'C:\Users\vikto\Documents\Programming\Python codes\Mathematical mod and sim\Project\pendel\recorded_data\45_lang_2.csv')
-df = df[2000:]
+# Get the current working directory
+current_dir = os.getcwd()
+csv_file_path = os.path.join(current_dir, 'recorded_data/45_lang_2.csv')
+df = pd.read_csv(csv_file_path)
+
 # Convert 'Vinkel' column from degrees to radians
 df['Vinkel'] = np.radians(df['Vinkel'])
 df['Vinkel_hastighet'] = np.radians(df['Vinkel_hastighet'])
