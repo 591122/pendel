@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from scipy.optimize import minimize
 
 print("Kjører!")
 
@@ -32,6 +31,13 @@ def system(t, variables, parameters):
     dvdt = -b * v - (g / L) * np.sin(y)
     return [dydt, dvdt]
 
+# Forward Euler method
+def forward_euler_step(y, v, b, L, dt):
+    dydt, dvdt = system(0, [y, v], [b, L])
+    y_new = y + dydt * dt
+    v_new = v + dvdt * dt
+    return y_new, v_new
+
 # Define the cost function to be minimized
 def C(params):
     initial_conditions = [df['Vinkel'].iloc[0], df['Vinkel_hastighet'].iloc[0]]
@@ -40,13 +46,9 @@ def C(params):
     theta_est[0], theta_dot_est[0] = initial_conditions
 
     for i in range(1, num_steps):
-        t_prev = t_values[i - 1]
         y_prev, v_prev = theta_est[i - 1], theta_dot_est[i - 1]
         b, L = params
-        dydt = v_prev
-        dvdt = -b * v_prev - (g / L) * np.sin(y_prev)
-        y_new = y_prev + dydt * dt
-        v_new = v_prev + dvdt * dt
+        y_new, v_new = forward_euler_step(y_prev, v_prev, b, L, dt)
         theta_est[i] = y_new
         theta_dot_est[i] = v_new
 
@@ -55,12 +57,13 @@ def C(params):
     return error
 
 # Bounds for the parameters
-bounds = [(0.01, 4), (0.1, 8)]
+bounds = [(0.1, 10), (0.1, 10)]
 
 # Initial guess
 initial_guess = [0.05, 0.68004458]
 
 # Perform the minimization with the constraint
+from scipy.optimize import minimize
 res = minimize(C, initial_guess, bounds=bounds)
 
 # Print the result
