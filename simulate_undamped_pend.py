@@ -7,11 +7,11 @@ L = 0.684  # length of the pendulum (m)  66,1CM + 3mm+ 2cm
 theta0 = np.pi/4  # initial angle (radians)
 omega0 = 0.0  # initial angular velocity (radians/s)
 t_max = 10.0  # simulation time (s)
-dt = 0.000001  # time step (s)
+dt = 0.001  # time step (s)
 
 # Define the equations of motion
 def pendulum_derivatives(state, t):
-    theta, omega = state
+    teta, omega = state
     dtheta_dt = omega
     domega_dt = -(g/L) * np.sin(theta)
     return [dtheta_dt, domega_dt]
