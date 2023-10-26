@@ -15,7 +15,7 @@ omega0 = 0.0
 # Load data
 # Get the current working directory
 current_dir = os.getcwd()
-csv_file_path = os.path.join(current_dir, 'recorded_data/45_lang_2.csv')
+csv_file_path = os.path.join(current_dir, 'pendel/recorded_data/45_lang_2.csv')
 df = pd.read_csv(csv_file_path)
 df['Vinkel'] = np.radians(df['Vinkel'])
 df['Vinkel_hastighet'] = np.radians(df['Vinkel_hastighet'])
