@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
+from scipy.integrate import solve_ivp, odeint
 
 print("Running!")
 
@@ -21,13 +22,6 @@ df['Vinkel'] = np.radians(df['Vinkel'])
 df['Vinkel_hastighet'] = np.radians(df['Vinkel_hastighet'])
 t_values = df['Time (s)'].values
 
-
-# Calculate the average time intervals for the datapoints
-tid = []
-for i in range(1, len(df)):
-    dt = df['Time (s)'].iloc[i] - df['Time (s)'].iloc[i-1]
-    tid.append(dt)
-dt = np.mean(tid)
 
 
 # Initialize arrays to store state values
@@ -70,8 +64,8 @@ def C(params):
     return error
 
 # Initial guess & bounds for the parameters
-initial_guess = [1, 0.7]
-bounds = [(0.1, 2), (0.1, 2)]
+initial_guess = [1/3, 0.7]
+bounds = [(0.01, 2), (0.1, 2)]
 
 # Perform the minimization with the constraint and printing the result
 from scipy.optimize import minimize
@@ -86,18 +80,29 @@ print("Optimal solution:", res.x)
 theta_est = np.zeros(num_steps)
 theta_dot_est = np.zeros(num_steps)
 
-initial_conditions = [df['Vinkel'].iloc[0], df['Vinkel_hastighet'].iloc[0]]
-    
-# Initialize state values for each optimization iteration
-theta_est[0], theta_dot_est[0] = initial_conditions
 
-for i in range(1, num_steps):
-        y_prev, v_prev = theta_est[i - 1], theta_dot_est[i - 1]
-        b, L = res.x
-        dt = df['Time (s)'].iloc[i] - df['Time (s)'].iloc[i-1]
-        y_new, v_new = forward_euler_step(y_prev, v_prev, b, L, dt)
-        theta_est[i] = y_new
-        theta_dot_est[i] = v_new
+t = df['Time (s)']  
+
+# Define initial conditions
+initial_conditions = [df['Vinkel'].iloc[0], df['Vinkel_hastighet'].iloc[0] ]  # y(0) = 0, dy/dt(0) = 1
+
+# Define the time span over which you want to solve the ODE
+t_span = [t.iloc[0], t.iloc[-1]]  # From t=0 to t=10
+
+# Call integrate:
+sol = solve_ivp(system, t_span, initial_conditions, args=(res.x,), t_eval=t)
+
+theta_est = sol.y[0]
+theta_dot_est = sol.y[1]
+t_values = sol.t
+
+#for i in range(1, num_steps):
+#        y_prev, v_prev = theta_est[i - 1], theta_dot_est[i - 1]
+#        b, L = res.x
+#        dt = df['Time (s)'].iloc[i] - df['Time (s)'].iloc[i-1]
+#        y_new, v_new = forward_euler_step(y_prev, v_prev, b, L, dt)
+#        theta_est[i] = y_new
+#        theta_dot_est[i] = v_new
 
 #       ------ You can ignore this part above!------ 
 

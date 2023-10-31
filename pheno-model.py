@@ -18,7 +18,7 @@ def contains_only_floats(lst):
 # Load data
 # Get the current working directory
 current_dir = os.getcwd()
-csv_file_path = os.path.join(current_dir, 'recorded_data/45_lang_2.csv')
+csv_file_path = os.path.join(current_dir, 'pendel/recorded_data/45_lang_2.csv')
 df = pd.read_csv(csv_file_path)
 
 # Convert 'Vinkel' column from degrees to radians
@@ -32,7 +32,8 @@ def system(t, variables, parameters):
     b, L = parameters
     
     dydt = v
-    dvdt = -b*v - (9.81/L)*np.sin(y)  
+    dvdt = -b*(np.sign(v)*v**2) - (9.81/L)*np.sin(y)  
+    #dvdt = -b*v - (9.81/L)*np.sin(y)  
     return [dydt, dvdt]
 
 
@@ -101,7 +102,7 @@ print(f'squared error is:{error}')
 # Plot the results
 # Convert back to degrees for plotting
 plt.plot(t, df['Vinkel'], 'o', label='Original Data')
-plt.plot(t, theta_est, label='Estimated')
+plt.plot(t, theta_est, 'o-', label='Estimated')
 plt.xlabel('Time')
 plt.ylabel('Value')
 plt.legend()
