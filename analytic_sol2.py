@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sympy as sp
 import math
-
+from numpy import cos, sin, exp
 
 
 
@@ -45,4 +45,27 @@ solutions = sp.solve([eq1, eq2], (C1, C2))
 specific_solution = solution.subs(solutions)
 
 # Display the specific solution
+print('y(y)(with inital condition)= ')
 print(specific_solution)
+
+
+t = np.linspace(0,291,4088)
+#y = np.exp(alpha*t) * (c1*np.cos(beta*t) + c2*np.sin(beta*t))
+#y = (0.750286030314788*sin(3.79805568991349*t) + 0.146008031404678*cos(3.79805568991349*t))*exp(-0.017245865*t)
+
+
+#plt.plot(t,y)
+#plt.show()
+
+
+t = sp.symbols('t')
+
+# Define the specific solution
+y = (0.750286030314788*sp.sin(3.79805568991349*t) + 0.146008031404678*sp.cos(3.79805568991349*t))*sp.exp(-0.017245865*t)
+
+# Find the first derivative
+y_prime = y.diff(t)
+
+# Display the first derivative
+print('y_dot = ')
+print(y_prime)
