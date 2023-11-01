@@ -8,18 +8,11 @@ import os
 
 print("Kjører!")
 
-def contains_only_floats(lst):
-    for element in lst:
-        if not isinstance(element, float):
-            return False
-    return True
-
-
 # Load data
 # Get the current working directory
-current_dir = os.getcwd()
-csv_file_path = os.path.join(current_dir, 'pendel/recorded_data/45_lang_2.csv')
-df = pd.read_csv(csv_file_path)
+#current_dir = os.getcwd()
+#csv_file_path = r'C:\Users\vikto\OneDrive - Høgskulen på Vestlandet\Documents\Programming\Python codes\Mathematical mod and sim\Project\pendel\recorded_data\45_kort_2.csv'
+df = pd.read_csv(r'C:\Users\vikto\OneDrive - Høgskulen på Vestlandet\Documents\Programming\Python codes\Mathematical mod and sim\Project\pendel\recorded_data\45_lang_2.csv')
 
 # Convert 'Vinkel' column from degrees to radians
 df['Vinkel'] = np.radians(df['Vinkel'])
@@ -53,8 +46,6 @@ def C(params):
     theta_est = sol.y[0]
     theta_dot_est = sol.y[1]
     t_values = sol.t
-    #return np.sum(np.abs(theta_est - df['Vinkel']))
-    #print(contains_only_floats(theta_est))
     return np.sum((theta_est - df['Vinkel'])**2)
 
 
@@ -62,10 +53,11 @@ def C(params):
 #==================parameter estimation=======================
 
 # Bounds for the parameters
-bounds = [(0.001, 1), (0.6, 0.7)]
+bounds = [(0.0001, 0.6), (0.6, 0.7)]
 
 # Initial guess
-initial_guess = [0.05, 0.68004458]  # Adjust these initial guesses as needed
+#initial_guess = [0.03, 0.68004458]  # For linear damping
+initial_guess = [0.02440196, 0.68004458]  #for quad 
 
 # Perform the minimization with the constraint
 res = minimize(C, initial_guess, bounds=bounds)
@@ -86,10 +78,6 @@ t_span = [t.iloc[0], t.iloc[-1]]  # From t=0 to t=10
 
 # Call integrate:
 sol = solve_ivp(system, t_span, initial_conditions, args=(res.x,), t_eval=t)
-#sol = solve_ivp(system, t_span, initial_conditions, args=([0.9, 0.67971812],), t_eval=t) # HERE IS THE PROBLEM (0.9)
-
-
-
 
 theta_est = sol.y[0]
 theta_dot_est = sol.y[1]
