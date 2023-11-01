@@ -5,6 +5,7 @@ import pandas as pd
 import scipy
 from scipy.integrate import solve_ivp, odeint
 import os
+from numpy import cos, sin, exp
 
 print("Kjører!")
 
@@ -25,8 +26,8 @@ def system(t, variables, parameters):
     b, L = parameters
     
     dydt = v
-    dvdt = -b*(np.sign(v)*v**2) - (9.81/L)*np.sin(y)  
-    #dvdt = -b*v - (9.81/L)*np.sin(y)  
+    #dvdt = -b*(np.sign(v)*v**2) - (9.81/L)*np.sin(y)  
+    dvdt = -b*v - (9.81/L)*np.sin(y)  
     return [dydt, dvdt]
 
 
@@ -56,8 +57,9 @@ def C(params):
 bounds = [(0.0001, 0.6), (0.6, 0.7)]
 
 # Initial guess
-#initial_guess = [0.03, 0.68004458]  # For linear damping
-initial_guess = [0.02440196, 0.68004458]  #for quad 
+#
+initial_guess = [0.03, 0.68004458]  # For linear damping
+#initial_guess = [0.02440196, 0.68004458]  #for quad 
 
 # Perform the minimization with the constraint
 res = minimize(C, initial_guess, bounds=bounds)
@@ -86,11 +88,14 @@ t_values = sol.t
 
 error = np.sum((theta_est - df['Vinkel']))**2
 
+y = (0.750286030314788*sin(3.79805568991349*t) + 0.146008031404678*cos(3.79805568991349*t))*exp(-0.017245865*t)
+
 print(f'squared error is:{error}')
 # Plot the results
 # Convert back to degrees for plotting
 plt.plot(t, df['Vinkel'], 'o', label='Original Data')
 plt.plot(t, theta_est, 'o-', label='Estimated')
+plt.plot(t,y,label='analytical')
 plt.xlabel('Time')
 plt.ylabel('Value')
 plt.legend()

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sympy as sp
 import math
-
+from numpy import cos,sin,exp
 def quadratic_formula(a, b, c):
     discriminant = b**2 - 4*a*c
     
@@ -27,7 +27,6 @@ L = 0.6800446
 c = 9.81/L
 
 #b = 0.03449173, L =  0.6800446 linear solution
-#
 
 x1, x2 = quadratic_formula(a, b, c)
 
@@ -38,8 +37,10 @@ C1, C2 = sp.symbols('C1 C2')
 beta = 3.7980556899134923 #x1.imag
 alpha = -0.017245865 #x1.real
 t0 = 0.07683181762695312
-y0 = 20.352175529
-y0_dot = 146.68254453419826
+y0 = np.radians(20.352175529)
+y0_dot = np.radians(146.68254453419826)
+
+print(y0,y0_dot,'HEHE')
 
 # Define the equations
 eq1 = sp.Eq(y0, sp.exp(alpha*t0) * (C1*sp.cos(beta*t0) + C2*sp.sin(beta*t0)))
@@ -58,8 +59,9 @@ c2 = 42.9882229646617#solutions[C2]
 print(c1,c2)
 
 t = np.linspace(0,291,4088)
-y = np.exp(alpha*t) * (c1*np.cos(beta*t) + c2*np.sin(beta*t))
+#y = np.exp(alpha*t) * (c1*np.cos(beta*t) + c2*np.sin(beta*t))
 
+y = (0.750286030314788*sin(3.79805568991349*t) + 0.146008031404678*cos(3.79805568991349*t))*exp(-0.017245865*t)
 
 plt.plot(t,y)
 plt.show()
