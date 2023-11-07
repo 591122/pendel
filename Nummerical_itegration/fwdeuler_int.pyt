@@ -8,7 +8,7 @@ print("Running!")
 
 # Open the CSV file and read the data
 current_dir = os.getcwd()
-csv_file_path = os.path.join(current_dir, 'pendel/recorded_data/45_lang_2.csv')
+csv_file_path = os.path.join(current_dir, 'recorded_data/45_lang_2.csv')
 df = pd.read_csv(csv_file_path)
 
 # Parameters

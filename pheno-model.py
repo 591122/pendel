@@ -11,14 +11,15 @@ print("Kjører!")
 
 # Load data
 # Get the current working directory
-#current_dir = os.getcwd()
-#csv_file_path = r'C:\Users\vikto\OneDrive - Høgskulen på Vestlandet\Documents\Programming\Python codes\Mathematical mod and sim\Project\pendel\recorded_data\45_kort_2.csv'
-df = pd.read_csv(r'C:\Users\vikto\OneDrive - Høgskulen på Vestlandet\Documents\Programming\Python codes\Mathematical mod and sim\Project\pendel\recorded_data\45_lang_2.csv')
+current_dir = os.getcwd()
+csv_file_path = os.path.join(current_dir, 'recorded_data/45_lang_1.csv')
+df = pd.read_csv(csv_file_path)
+#df = pd.read_csv(r'C:\Users\vikto\OneDrive - Høgskulen på Vestlandet\Documents\Programming\Python codes\Mathematical mod and sim\Project\pendel\recorded_data\45_lang_2.csv')
 
 # Convert 'Vinkel' column from degrees to radians
 df['Vinkel'] = np.radians(df['Vinkel'])
 df['Vinkel_hastighet'] = np.radians(df['Vinkel_hastighet'])
-print(len(df['Vinkel']))
+print('Antall datapunkt: ',len(df['Vinkel']))
 
 # ============Define the second-order differential pendulumsystem============
 def system(t, variables, parameters):
@@ -42,7 +43,11 @@ def C(params):
     t_span = [t.iloc[0], t.iloc[-1]]  
 
     # Call integrate:
-    sol = solve_ivp(system, t_span, initial_conditions, args=(params,), t_eval=t)
+    # Tolerance settings
+    atol = 1e-8  # Absolute tolerance
+    rtol = 1e-6  # Relative tolerance
+
+    sol = solve_ivp(system, t_span, initial_conditions, args=(params,), t_eval=t, atol=atol, rtol=rtol ,method='DOP853')
 
     theta_est = sol.y[0]
     theta_dot_est = sol.y[1]
@@ -93,7 +98,7 @@ y = (0.750286030314788*sin(3.79805568991349*t) + 0.146008031404678*cos(3.7980556
 print(f'squared error is:{error}')
 # Plot the results
 # Convert back to degrees for plotting
-plt.plot(t, df['Vinkel'], 'o', label='Original Data')
+#plt.plot(t, df['Vinkel'], 'o', label='Original Data')
 plt.plot(t, theta_est, 'o-', label='Estimated')
 plt.plot(t,y,label='analytical')
 plt.xlabel('Time')

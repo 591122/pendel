@@ -16,7 +16,7 @@ omega0 = 0.0
 # Load data
 # Get the current working directory
 current_dir = os.getcwd()
-csv_file_path = os.path.join(current_dir, 'pendel/recorded_data/45_lang_2.csv')
+csv_file_path = os.path.join(current_dir, 'recorded_data/45_lang_2.csv')
 df = pd.read_csv(csv_file_path)
 df['Vinkel'] = np.radians(df['Vinkel'])
 df['Vinkel_hastighet'] = np.radians(df['Vinkel_hastighet'])
@@ -73,41 +73,6 @@ res = minimize(C, initial_guess, bounds=bounds)
 print("Optimal solution:", res.x)
 
 
-
-#       ------ You can ignore this part under! ------
-
-# Reseting the variables to comfirme that the optimization works correctly
-theta_est = np.zeros(num_steps)
-theta_dot_est = np.zeros(num_steps)
-
-
-t = df['Time (s)']  
-
-# Define initial conditions
-initial_conditions = [df['Vinkel'].iloc[0], df['Vinkel_hastighet'].iloc[0] ]  # y(0) = 0, dy/dt(0) = 1
-
-# Define the time span over which you want to solve the ODE
-t_span = [t.iloc[0], t.iloc[-1]]  # From t=0 to t=10
-
-# Call integrate:
-sol = solve_ivp(system, t_span, initial_conditions, args=(res.x,), t_eval=t)
-
-theta_est = sol.y[0]
-theta_dot_est = sol.y[1]
-t_values = sol.t
-
-#for i in range(1, num_steps):
-#        y_prev, v_prev = theta_est[i - 1], theta_dot_est[i - 1]
-#        b, L = res.x
-#        dt = df['Time (s)'].iloc[i] - df['Time (s)'].iloc[i-1]
-#        y_new, v_new = forward_euler_step(y_prev, v_prev, b, L, dt)
-#        theta_est[i] = y_new
-#        theta_dot_est[i] = v_new
-
-#       ------ You can ignore this part above!------ 
-
-
-
 # Calculate the error after the optimization
 error = np.sum((theta_est - df['Vinkel'])**2)
 print(f'squared error is:{error}')
@@ -116,7 +81,7 @@ print(f'squared error is:{error}')
 # Plot the results
 plt.plot(t_values, df['Vinkel'], 'o', label='Original Data')
 plt.plot(t_values, theta_est, 'o-', label='Estimated')
-plt.title('Parameter estimation of L = ' + str(res.x[0])[:5] + ' and b = ' + str(res.x[1])[:5] + ' for pendulum system with linear damping. With Mean squard error = '  + str(error)[:5])
+plt.title('Parameter estimation of L = ' + str(res.x[1])[:5] + ' and b = ' + str(res.x[0])[:5] + ' for pendulum system with linear damping. With Mean squard error = '  + str(error)[:5])
 plt.xlabel('Time (s)')
 plt.ylabel('Angle (radians)')
 plt.legend()
