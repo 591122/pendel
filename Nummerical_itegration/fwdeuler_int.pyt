@@ -58,12 +58,12 @@ for i in range(1, num_steps):
     theta_dot_est[i] = v
 
 # Plot the results
-time = df['Time (s)']
+time = df['Time [s]']
 plt.figure(figsize=(12, 6))
-plt.plot(time, np.degrees(theta_est), label='Angle (degrees)')
+plt.plot(time, np.degrees(theta_est), label='Angle [degrees]')
 #plt.plot(time, np.degrees(theta_dot_est), label='Angular Velocity (degrees/s)')
-plt.xlabel('Time (s)')
-plt.ylabel('Angle (degrees)')
+plt.xlabel('Time [s]')
+plt.ylabel('Angle [degrees]')
 plt.legend()
 plt.title('Pendulum Motion')
 plt.grid(True)

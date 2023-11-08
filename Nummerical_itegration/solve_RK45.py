@@ -24,7 +24,7 @@ t_span = (t0, 300)  # Adjust the time span as needed
 start_time = time.time()
 
 # Tolerance settings
-atol = 1e-18  # Absolute tolerance
+atol = 1e-16  # Absolute tolerance
 rtol = 1e-13  # Relative tolerance
 
 # Solve the ODE using solve_ivp
@@ -51,20 +51,20 @@ error = np.abs(theta_numerical - theta_analytical)
 plt.figure()
 plt.subplot(2, 1, 1)
 plt.plot(t, theta_numerical, label='Numerical Solution')
-plt.plot(t, theta_analytical, label='Analytical Solution', linestyle='dashed')
-plt.xlabel('Time (t)')
-plt.ylabel('Angle (θ)')
+plt.plot(t, theta_analytical, label='RK45', linestyle='dashed')
+plt.xlabel('Time [s]')
+plt.ylabel('Angle [rad]')
 plt.legend()
 plt.grid()
 plt.title(f'Analytical vs. Numerical (RK45), Execution time: {execution_time:.2f} seconds, atol = {atol}, rtol = {rtol}')
 
 plt.subplot(2, 1, 2)
-plt.plot(t, error, label='Error')
-plt.xlabel('Time (t)')
-plt.ylabel('Error')
+plt.plot(t, error, label='Error [rad]')
+plt.xlabel('Time [s]')
+plt.ylabel('Error [rad]')
 plt.legend()
 plt.grid()
-plt.title('Error between Analytical and Numerical Solutions')
+plt.title('Error between Analytical and RK45')
 
 plt.tight_layout()
 plt.show()
