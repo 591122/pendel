@@ -81,7 +81,7 @@ print(f'squared error is:{error}')
 # Plot the results
 plt.plot(t_values, df['Vinkel'], 'o', label='Original Data')
 plt.plot(t_values, theta_est, 'o-', label='Estimated')
-plt.title('Parameter estimation of L = ' + str(res.x[1])[:5] + ' and b = ' + str(res.x[0])[:5] + ' for pendulum system with linear damping. With Mean squard error = '  + str(error)[:5])
+plt.title('Parameter estimation of L = ' + str(res.x[0])[:5] + ' and b = ' + str(res.x[1])[:5] + ' for pendulum system with linear damping. With Mean squard error = '  + str(error)[:5])
 plt.xlabel('Time (s)')
 plt.ylabel('Angle (radians)')
 plt.legend()

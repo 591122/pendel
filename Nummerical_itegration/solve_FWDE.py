@@ -9,44 +9,34 @@ t0 = 0.07683181362695312
 b=0.03449173
 g=9.81
 L=0.6800446
-
-y0 = [theta0, omega0]
-
-# Time span for integration
-t_end = 300
-num_steps = 30000000  # Number of time steps
-#dt = (t_end - t0) / num_steps
-dt = 0.00001 #step size
-
+t_end = 300  # Final time
+h = 0.0001  # Step size
 
 # Measure execution time
 start_time = time.time()
 
-# Initialize arrays to store results
-t_values = [t0]
-theta_values = [theta0]
+# Initialize arrays
+t = np.arange(t0, t_end, h)
+u = np.zeros_like(t)
+v = np.zeros_like(t)
+
+# Set initial conditions
+u[0] = omega0
+v[0] = theta0
 
 # Perform forward Euler integration
-for _ in range(1, num_steps + 1):
-    t_new = t_values[-1] + dt
-    y_new = [0, 0]  # Initialize new state
-
-    # Forward Euler update
-    y_new[0] = y0[0] + dt * y0[1]
-    y_new[1] = y0[1] + dt * (-b * y0[1] - g / L * y0[0])
-
-    t_values.append(t_new)
-    theta_values.append(y_new[0])
-
-    y0 = y_new  # Update the state
+for i in range(1, len(t)):
+    u[i] = (-h * b + 1) * u[i-1] - g * h / L * v[i-1]
+    v[i] = v[i-1] + h * u[i]
 
 # Calculate execution time
 end_time = time.time()
 execution_time = end_time - start_time
 
+
 # Convert the lists to NumPy arrays
-t = np.array(t_values)
-theta_numerical = np.array(theta_values)
+t = np.array(t)
+theta_numerical = np.array(v)
 
 # Analytical solution
 def analytical_solution(t):
@@ -66,7 +56,7 @@ plt.xlabel('Time [s]')
 plt.ylabel('Angle [rad]')
 plt.legend()
 plt.grid()
-plt.title(f'Analytical vs. Forward Euler, Execution time: {execution_time:.2f} seconds. Step size: {dt}')
+plt.title(f'Analytical vs. Forward Euler, Execution time: {execution_time:.2f} seconds. Step size: {h}')
 
 plt.subplot(2, 1, 2)
 plt.plot(t, error, label='Error [rad]')

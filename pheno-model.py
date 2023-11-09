@@ -98,11 +98,12 @@ y = (0.750286030314788*sin(3.79805568991349*t) + 0.146008031404678*cos(3.7980556
 print(f'squared error is:{error}')
 # Plot the results
 # Convert back to degrees for plotting
-#plt.plot(t, df['Vinkel'], 'o', label='Original Data')
-plt.plot(t, theta_est, 'o-', label='Estimated')
-plt.plot(t,y,label='analytical')
-plt.xlabel('Time')
-plt.ylabel('Value')
+plt.plot(t, df['Vinkel'], '.', label='Original data')
+plt.plot(t, theta_est, '.-', label='Estimated')
+#plt.plot(t,y,label='analytical')
+plt.xlabel('Time [s]')
+plt.title('Parameter estimation of L = ' + str(res.x[1])[:5] + ' and b = ' + str(res.x[0])[:5] + ' for model with linear damping. Mean squard error = '  + str(error)[:5])
+plt.ylabel('Angle [rad]')
 plt.legend()
 plt.show()
 print('FERDIG!')

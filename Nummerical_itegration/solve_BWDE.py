@@ -1,36 +1,39 @@
 import os
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt  # Import Matplotlib
+import matplotlib.pyplot as plt  
 from numpy import cos, sin, exp
 import time
-
 
 print("Running!")
 
 # Measure execution time
 start_time = time.time()
 
-def backward_euler(v0,u0,t0, h, t_end):
+def backward_euler(v0, u0, t0, h, t_end):
     #params:
     b = 0.03449173
     L = 0.6800446
-    g = 9.81  # Gravitational acceleration
+    g = 9.81  
 
-    t = [t0]
-    v = [v0]
-    u = [u0]
-    A = np.array([    [1      ,        -h], 
-                 [(h * g) / L, 1 + h * b]])
+    # Initialize arrays
+    t = np.arange(t0, t_end, h)
+    v = np.zeros_like(t)
+    u = np.zeros_like(t)
+    
+    #inital values
+    v[0] = v0
+    u[0] = u0
 
-    invA = np.linalg.inv(A)
-    while t[-1]<t_end:
-        B = np.array([[v[-1]],[u[-1]]])
-        #x = np.linalg.solve(A,B)
-        x = np.dot(invA,B)
-        v.append(x[0][0])
-        u.append(x[1][0])
-        t.append(t[-1]+h)
+    A = np.array([[1, -h],[(h * g) / L, 1 + h * b]]) #coefficient-matrix
+
+    invA = np.linalg.inv(A) #inverse of coefficient-matrix
+
+    for i in range(1, len(t)):
+        B = np.array([[v[i-1]], [u[i-1]]])
+        x = np.dot(invA, B)
+        v[i] = x[0][0]
+        u[i] = x[1][0]
     return t, v, u
 
 # Parameters
